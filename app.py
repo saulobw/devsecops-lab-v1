@@ -5,7 +5,7 @@ def run_app():
 
     # VULNERABILIDAD INTENCIONAL: Credencial "Hardcoded"
     # Esto es lo que Gitleaks detectará más adelante.
-    AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE" 
+    AWS_ACCESS_KEY_ID = "AKIAIMREALBUTFAKEKEY" 
     AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 
     print(f"Conectando con la llave: {AWS_ACCESS_KEY_ID}")
