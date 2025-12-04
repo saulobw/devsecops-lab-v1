@@ -3,12 +3,14 @@ import os
 def run_app():
     print("Iniciando aplicacion segura... o tal vez no.")
 
-    # VULNERABILIDAD INTENCIONAL: Credencial "Hardcoded"
-    # Esto es lo que Gitleaks detectará más adelante.
-    AWS_ACCESS_KEY_ID = "AKIAIMREALBUTFAKEKEY" 
-    AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    # SOLUCIÓN: Leemos del entorno del sistema, no del archivo.
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-    print(f"Conectando con la llave: {AWS_ACCESS_KEY_ID}")
+    if AWS_ACCESS_KEY_ID:
+        print(f"Conectando con la llave: {AWS_ACCESS_KEY_ID}")
+    else:
+        print("No se encontró credencial, pero el código es seguro.")
 
 if __name__ == "__main__":
     run_app()
