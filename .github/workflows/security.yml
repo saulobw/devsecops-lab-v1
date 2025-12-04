@@ -1,0 +1,24 @@
+name: DevSecOps Pipeline
+
+# Trigger: ¿Cuándo se ejecuta esto?
+# Se ejecutará cada vez que hagamos un 'push' a la rama 'main'
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # TRINCHERA 1: Búsqueda de Secretos
+  gitleaks-scan:
+    name: Detectar Secretos Expuestos
+    runs-on: ubuntu-latest
+    steps:
+      # Paso A: Descargar el código del repositorio al servidor de prueba
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Importante: Descarga todo el historial para buscar en commits pasados
+
+      # Paso B: Ejecutar Gitleaks
+      - name: Correr Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
