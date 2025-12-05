@@ -31,6 +31,5 @@ jobs:
       - name: Auditoria de Codigo Python (Bandit)
         uses: PyCQA/bandit-action@v1
         with:
-          scans: '.'
           # Fallar si encuentra vulnerabilidades de severidad Media o Alta
-          severity: 'medium,high'
+          severity: 'medium'
