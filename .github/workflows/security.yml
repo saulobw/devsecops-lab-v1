@@ -37,3 +37,4 @@ jobs:
         with:
           # Fallar si encuentra vulnerabilidades de severidad Media o Alta
           severity: 'medium'
+          exit_code: 1 # <--- ¡ESTE ES EL COMANDO CRÍTICO!
