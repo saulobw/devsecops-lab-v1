@@ -11,9 +11,9 @@ def run_app():
 
     # VULNERABILIDAD SAST: Uso de MD5 (Inseguro)
     password = "supersecretpassword"
-    # Bandit detectará que 'md5' es una función prohibida
-    hash_obj = hashlib.md5(password.encode()) 
-    print(f"Hash inseguro: {hash_obj.hexdigest()}")
+    # cambio md5 por sha256
+    hash_obj = hashlib.sha256(password.encode()) 
+    print(f"Hash seguro: {hash_obj.hexdigest()}")
 
 if __name__ == "__main__":
     run_app()
