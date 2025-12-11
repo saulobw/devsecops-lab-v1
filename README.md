@@ -1,59 +1,48 @@
-# 🛡️ DevSecOps Security Pipeline Lab
+# 🛡️ End-to-End DevSecOps & Secure Supply Chain Lab
 
 ![Build Status](https://img.shields.io/badge/Build-Passing-success?style=for-the-badge&logo=github)
-![Security](https://img.shields.io/badge/Security-Shift--Left-blue?style=for-the-badge&logo=security)
-![Python](https://img.shields.io/badge/Python-3.x-yellow?style=for-the-badge&logo=python)
+![Docker](https://img.shields.io/badge/Container-Hardened-blue?style=for-the-badge&logo=docker)
+![Sigstore](https://img.shields.io/badge/Integrity-Signed-purple?style=for-the-badge&logo=letsencrypt)
+![Security](https://img.shields.io/badge/Security-Shift--Left-red?style=for-the-badge&logo=security)
 
 ## 📋 Descripción del Proyecto
 
-Este repositorio aloja una implementación práctica de una **Pipeline CI/CD Segura (DevSecOps)** utilizando **GitHub Actions**. El objetivo principal es demostrar la integración de controles de seguridad automatizados en el ciclo de vida del desarrollo de software (SDLC), siguiendo la filosofía "Shift-Left".
+Este proyecto demuestra la implementación de una **Cadena de Suministro de Software Segura (Secure Software Supply Chain)**. Evoluciona desde la protección del código fuente hasta la entrega de artefactos inmutables y firmados criptográficamente.
 
-El proyecto consiste en una aplicación Python intencionalmente vulnerable que es sanitizada automáticamente mediante múltiples barreras de seguridad antes de permitir su despliegue.
+El pipeline integra controles de seguridad automatizados (SAST, SCA, Secret Scanning) y extiende la seguridad a la infraestructura mediante **Container Hardening** y **Firma Digital de Imágenes**.
 
-## 🏗️ Arquitectura y Herramientas
+## 🏗️ Arquitectura de Defensa en Profundidad
 
-El pipeline integra las siguientes herramientas de seguridad de código abierto:
+El sistema impone barreras de seguridad en dos fases críticas:
 
-| Herramienta | Tipo de Análisis | Función en el Pipeline |
-| :--- | :--- | :--- |
-| **Gitleaks** | Secret Scanning | Detecta credenciales, API Keys y secretos hardcodeados en el código para prevenir fugas de información. |
-| **Trivy** | SCA (Software Composition Analysis) | Escanea las dependencias del proyecto (`requirements.txt`) en busca de vulnerabilidades conocidas (CVEs). |
-| **Bandit** | SAST (Static Application Security Testing) | Analiza el código fuente de Python en busca de patrones de programación inseguros (ej. algoritmos de hash débiles). |
+### FASE 1: Seguridad del Código (AppSec)
+| Herramienta | Función |
+| :--- | :--- |
+| **Gitleaks** | Prevención de fuga de credenciales y secretos (Secret Scanning). |
+| **Trivy (FS)** | Detección de vulnerabilidades en dependencias de la aplicación. |
+| **Bandit** | Análisis estático (SAST) para código Python y corrección de criptografía débil. |
 
-## 🚀 Flujo de Trabajo (Workflow)
+### FASE 2: Seguridad del Contenedor (InfraSec & Integrity)
+| Herramienta | Función |
+| :--- | :--- |
+| **Docker (Slim)** | Construcción de imágenes optimizadas con principio de mínimo privilegio (Non-root user). |
+| **Trivy (Image)** | Escaneo de vulnerabilidades del Sistema Operativo base del contenedor. |
+| **Dockle** | Auditoría de cumplimiento de estándares **CIS Benchmarks** y buenas prácticas de Docker. |
+| **Cosign** | **Firma Digital y Verificación** para garantizar la inmutabilidad e integridad del artefacto. |
 
-Cada vez que un desarrollador realiza un `push` a la rama principal:
+## 🚀 Flujo de Trabajo (The Pipeline)
 
-1.  **Checkout:** Se descarga el código en el entorno de ejecución.
-2.  **Detección de Secretos:** Gitleaks escanea el historial de git. Si encuentra secretos, **rompe el build**.
-3.  **Análisis de Dependencias:** Trivy verifica las librerías instaladas. Si encuentra CVEs Críticos/Altos, **rompe el build**.
-4.  **Auditoría de Código:** Bandit analiza la sintaxis de Python. Si detecta funciones inseguras (como MD5), genera alertas de seguridad.
-5.  **Reporte:** Los hallazgos se suben automáticamente a la pestaña **GitHub Security** para su gestión y remediación.
+1.  **Commit:** El desarrollador envía código.
+2.  **Code Gates:** Gitleaks, Bandit y Trivy escanean el código. Si falla, se bloquea el build.
+3.  **Build Seguro:** Se construye la imagen Docker usando usuarios sin privilegios (`appuser`).
+4.  **Audit:** Dockle verifica la configuración del contenedor.
+5.  **Signing:** Se sube la imagen a **GHCR** y se firma con **Cosign**.
+6.  **Verify:** Se valida la firma criptográfica antes de cualquier despliegue.
 
-## 🛠️ Instalación y Uso Local
+## 🛠️ Verificación de Integridad (Demo)
 
-Si deseas replicar este laboratorio en tu máquina:
+Para verificar que la imagen producida en este laboratorio es auténtica y no ha sido manipulada, utiliza la clave pública adjunta en el repositorio:
 
-1.  Clona el repositorio:
-    ```bash
-    git clone [https://github.com/TU_USUARIO/devsecops-lab-v1.git](https://github.com/TU_USUARIO/devsecops-lab-v1.git)
-    ```
-2.  Instala las dependencias:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  Ejecuta la aplicación segura:
-    ```bash
-    python3 app.py
-    ```
-
-## 🎓 Aprendizajes Clave
-
-* Configuración de **GitHub Actions** para automatización CI/CD.
-* Implementación de políticas de **Build Breaker** (detener el despliegue ante fallos de seguridad).
-* Gestión de **falsos positivos** y remediación de vulnerabilidades reales.
-* Uso de **Variables de Entorno** para la gestión segura de credenciales.
-* Reemplazo de criptografía débil (MD5) por estándares seguros (SHA256).
-
----
-*Desarrollado con ❤️ y ☕ como parte de mi formación en Ciberseguridad y DevSecOps.*
+```bash
+# Requiere tener Cosign instalado
+cosign verify --key cosign.pub ghcr.io/TU_USUARIO/devsecops-app:v1
