@@ -1,0 +1,6 @@
+# Aceptamos riesgo de caché en imagen base oficial
+DKL-DI-0005
+# Ignoramos Content Trust (lo haremos con Cosign en el siguiente paso)
+CIS-DI-0005
+# Ignoramos Healthcheck por simplicidad del laboratorio
+CIS-DI-0006
